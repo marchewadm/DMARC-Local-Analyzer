@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Laravel\Fortify\Features;
 
 return [
@@ -86,7 +88,7 @@ return [
     |
     */
 
-    'prefix' => '',
+    'prefix' => 'api',
 
     'domain' => null,
 
@@ -148,7 +150,7 @@ return [
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::updateProfileInformation(),
-//        Features::updatePasswords(),
+        //        Features::updatePasswords(),
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
