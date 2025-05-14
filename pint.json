@@ -3,6 +3,7 @@
     "rules": {
         "declare_strict_types": true,
         "fully_qualified_strict_types": true,
-        "method_chaining_indentation": true
+        "method_chaining_indentation": true,
+        "single_quote": true
     }
 }
