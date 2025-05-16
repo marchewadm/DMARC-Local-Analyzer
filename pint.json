@@ -4,6 +4,11 @@
         "declare_strict_types": true,
         "fully_qualified_strict_types": true,
         "method_chaining_indentation": true,
-        "single_quote": true
+        "single_quote": true,
+        "array_indentation": true,
+        "ordered_class_elements": true,
+        "concat_space": {
+            "spacing": "one"
+        }
     }
 }
