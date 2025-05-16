@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('api/v1')
                 ->group(base_path('routes/api_v1.php'));
         },
-        commands: __DIR__.'/../routes/console.php',
+        commands: __DIR__ . '/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
