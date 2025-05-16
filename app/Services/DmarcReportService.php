@@ -35,7 +35,7 @@ use SimpleXMLElement;
  *     }>
  * }
  */
-final class ReportService
+final class DmarcReportService
 {
     /**
      * Parse a single uploaded DMARC XML report file.

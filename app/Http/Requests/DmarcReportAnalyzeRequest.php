@@ -12,7 +12,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *
  * Ensures that the uploaded file is a required XML file with a maximum size of 5MB.
  */
-final class DemoReportAnalyzeRequest extends FormRequest
+final class DmarcReportAnalyzeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

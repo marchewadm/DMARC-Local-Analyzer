@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\DemoReportAnalyzeController;
+use App\Http\Controllers\DmarcReportAnalyzeController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/demo/report/analyze', DemoReportAnalyzeController::class);
+Route::post('/demo/report/analyze', DmarcReportAnalyzeController::class);
