@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidDmarcReport;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -37,6 +38,7 @@ final class DmarcReportAnalyzeRequest extends FormRequest
                 'mimes:xml',
                 'mimetypes:application/xml,text/xml',
                 'max:5120', // 5 MB
+                new ValidDmarcReport,
             ],
         ];
     }
