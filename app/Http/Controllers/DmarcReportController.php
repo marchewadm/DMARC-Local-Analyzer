@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Exceptions\Dmarc\InvalidXmlException;
-use App\Exceptions\Dmarc\MissingFieldsException;
 use App\Http\Requests\StoreDmarcReportRequest;
 use App\Models\User;
 use App\Services\DmarcReportService;
@@ -29,18 +28,18 @@ final class DmarcReportController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @throws InvalidXmlException If the XML is invalid.
-     * @throws MissingFieldsException If required DMARC fields are missing.
-     * @throws Throwable If the transaction fails.
+     * @throws InvalidXmlException
+     * @throws Throwable
      */
     public function store(StoreDmarcReportRequest $request): JsonResponse
     {
-        /** @var UploadedFile[] $files */
+        /** @var list<UploadedFile> $files */
         $files = $request->file('dmarc_reports');
         /** @var User $user */
         $user = $request->user();
 
-        $reports = $this->dmarcReportService->parseMultipleReports($files);
+        $xmlFiles = $this->dmarcReportService->loadXmlFiles($files);
+        $reports = $this->dmarcReportService->parseMultipleReports($xmlFiles);
 
         $this->dmarcReportService->storeDmarcReport($reports, $user);
 

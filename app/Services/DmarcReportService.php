@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\Dmarc\InvalidXmlException;
-use App\Exceptions\Dmarc\MissingFieldsException;
 use App\Models\User;
 use App\Parsers\DmarcXmlParser;
 use Illuminate\Http\UploadedFile;
@@ -23,17 +22,14 @@ final readonly class DmarcReportService
     /**
      * Parse one or more DMARC XML report files.
      *
-     * @param  UploadedFile[]  $files  Uploaded XML files to be parsed.
+     * @param  list<SimpleXMLElement>  $xmlFiles  XML files to be parsed.
      * @return list<DmarcReport> List of structured arrays representing multiple DMARC reports.
-     *
-     * @throws InvalidXmlException If the XML is invalid.
-     * @throws MissingFieldsException If required DMARC fields are missing.
      */
-    public function parseMultipleReports(array $files): array
+    public function parseMultipleReports(array $xmlFiles): array
     {
         $reports = [];
 
-        foreach ($files as $file) {
+        foreach ($xmlFiles as $file) {
             $reports[] = $this->parseSingleReport($file);
         }
 
@@ -41,27 +37,13 @@ final readonly class DmarcReportService
     }
 
     /**
-     * Parse a single uploaded DMARC XML report file.
+     * Parse a single DMARC XML report file.
      *
-     * @param  UploadedFile  $file  The uploaded XML file to be parsed.
+     * @param  SimpleXMLElement  $xml  XML file to be parsed.
      * @return DmarcReport Structured array representation of a single DMARC report.
-     *
-     * @throws InvalidXmlException If the XML is invalid.
-     * @throws MissingFieldsException If required DMARC fields are missing.
      */
-    public function parseSingleReport(UploadedFile $file): array
+    public function parseSingleReport(SimpleXMLElement $xml): array
     {
-        $filePathname = $file->getPathname();
-        $xml = simplexml_load_file($filePathname);
-
-        if (! $xml instanceof SimpleXMLElement) {
-            throw new InvalidXmlException;
-        }
-
-        if (! isset($xml->{'report_metadata'}, $xml->{'policy_published'})) {
-            throw new MissingFieldsException;
-        }
-
         return $this->dmarcXmlParser->parse($xml);
     }
 
@@ -110,5 +92,41 @@ final readonly class DmarcReportService
                 }
             }
         });
+    }
+
+    /**
+     * @param  list<UploadedFile>  $files
+     * @return list<SimpleXMLElement>
+     *
+     * @throws InvalidXmlException If the XML is invalid.
+     */
+    public function loadXmlFiles(array $files): array
+    {
+        /** @var list<SimpleXMLElement> $xmlFiles */
+        $xmlFiles = [];
+
+        foreach ($files as $file) {
+            $xmlFiles[] = $this->loadXmlFile($file);
+        }
+
+        return $xmlFiles;
+    }
+
+    /**
+     * @param  UploadedFile  $file  The uploaded XML file.
+     * @return SimpleXMLElement The loaded XML element.
+     *
+     * @throws InvalidXmlException If the XML is invalid.
+     */
+    public function loadXmlFile(UploadedFile $file): SimpleXMLElement
+    {
+        $filePathname = $file->getPathname();
+        $xmlFile = simplexml_load_file($filePathname);
+
+        if (! $xmlFile instanceof SimpleXMLElement) {
+            throw new InvalidXmlException;
+        }
+
+        return $xmlFile;
     }
 }
