@@ -26,10 +26,16 @@ final class DmarcReportController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Handles the upload and storage of new DMARC report files.
      *
-     * @throws InvalidXmlException
-     * @throws Throwable
+     * This method retrieves uploaded XML files from the request, loads them,
+     * parses the DMARC reports, and stores them in the database under the authenticated user.
+     *
+     * @param  StoreDmarcReportRequest  $request  The incoming HTTP request containing DMARC report files.
+     * @return JsonResponse A JSON response containing the parsed DMARC reports.
+     *
+     * @throws InvalidXmlException If any of the files contain invalid XML.
+     * @throws Throwable If an error occurs during the database transaction.
      */
     public function store(StoreDmarcReportRequest $request): JsonResponse
     {
@@ -63,10 +69,29 @@ final class DmarcReportController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deletes one or more DMARC reports by their IDs.
+     *
+     * This method accepts a comma-separated list of IDs, converts them to integers,
+     * and removes the corresponding DMARC reports belonging to the authenticated user.
+     *
+     * @param  string  $id  A comma-separated string of DMARC report IDs to delete.
+     * @return JsonResponse A JSON response confirming successful deletion.
+     *
+     * @throws Throwable If an error occurs during the database transaction.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $rawIds = explode(',', $id);
+
+        /** @var list<int> $reportIds */
+        $reportIds = array_map(fn ($id) => (int) $id, $rawIds);
+        /** @var User $user */
+        $user = request()->user();
+
+        $this->dmarcReportService->deleteDmarcReport($reportIds, $user);
+
+        return response()->json([
+            'message' => 'Selected DMARC reports have been successfully deleted.',
+        ]);
     }
 }

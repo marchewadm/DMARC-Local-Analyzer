@@ -95,10 +95,12 @@ final readonly class DmarcReportService
     }
 
     /**
-     * @param  list<UploadedFile>  $files
-     * @return list<SimpleXMLElement>
+     * Loads a list of uploaded XML files as SimpleXMLElement objects.
      *
-     * @throws InvalidXmlException If the XML is invalid.
+     * @param  list<UploadedFile>  $files  An array of uploaded XML files.
+     * @return list<SimpleXMLElement> An array of loaded XML documents.
+     *
+     * @throws InvalidXmlException If any of the files contain invalid XML.
      */
     public function loadXmlFiles(array $files): array
     {
@@ -113,6 +115,8 @@ final readonly class DmarcReportService
     }
 
     /**
+     * Loads an uploaded XML file and returns it as a SimpleXMLElement.
+     *
      * @param  UploadedFile  $file  The uploaded XML file.
      * @return SimpleXMLElement The loaded XML element.
      *
@@ -128,5 +132,20 @@ final readonly class DmarcReportService
         }
 
         return $xmlFile;
+    }
+
+    /**
+     * Deletes the specified DMARC reports associated with the given user.
+     *
+     * @param  list<int>  $ids  An array of DMARC report IDs to delete.
+     * @param  User  $user  The user who owns the reports.
+     *
+     * @throws Throwable If the transaction fails.
+     */
+    public function deleteDmarcReport(array $ids, User $user): void
+    {
+        DB::transaction(function () use ($ids, $user) {
+            $user->dmarcReports()->whereIn('id', $ids)->delete();
+        });
     }
 }
